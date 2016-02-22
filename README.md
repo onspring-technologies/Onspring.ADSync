@@ -20,7 +20,7 @@ This section describes how to configure the sample project for use with your Ons
 - Obtain an API key as described in the **API Key** section of [the SDK's README](https://github.com/onspring-technologies/onspring-api-sdk)
 - In the sample project's App.config, replace the current `ApiKey` setting with your API key:
 
-```
+```xml
       <appSettings>
         ...
         <add key="ApiKey" value="000000ffffff000000ffffff/00000000-ffff-0000-ffff-000000000000"/>
@@ -33,7 +33,7 @@ This section describes how to configure the sample project for use with your Ons
 - Obtain the AppId for the Users app in your Onspring instance.  One easy way to do this is by using the [Onspring.ApiDemo](https://github.com/onspring-technologies/Onspring.ApiDemo) sample project.  If you are using it, click the **Get App List** button, then inspect the **Results** at the bottom to locate the Id of the Users app.
 - In the sample project's App.config, replace the current `UsersAppId` setting with the Users AppId for your instance:
 
-```
+```xml
       <appSettings>
         ...
         <add key="UsersAppId" value="1"/>
@@ -53,7 +53,7 @@ This section describes how to configure the sample project for use with your Ons
 
 - In the sample project's App.config, replace the current `UsernameFieldId`, `FirstNameFieldId`, `LastNameFieldId`, and `EmailFieldId` settings with the appropriate values for your instance:
 
-```
+```xml
       <appSettings>
         ...
         <add key="UsernameFieldId" value="4"/>
@@ -72,7 +72,7 @@ This section describes key aspects of the code in the sample project to help you
 
 - A strongly-typed business object - you will probably want to create similar business objects for your own integration
 
-```
+```c#
     public class OnspringUser
     {
         public string Username { get; set; }
@@ -86,7 +86,7 @@ This section describes key aspects of the code in the sample project to help you
 
 - Create a mapper using the settings configured in the App.config
 
-```
+```c#
     public OnspringMapper()
     {
         UsersAppId = int.Parse(ConfigurationManager.AppSettings[nameof(UsersAppId)]);
@@ -99,7 +99,7 @@ This section describes key aspects of the code in the sample project to help you
 
 - Load a business object using a generic result record obtained from calling the API using the SDK
 
-```
+```c#
     public OnspringUser LoadUser(ResultRecord record)
     {
         return new OnspringUser
@@ -114,7 +114,7 @@ This section describes key aspects of the code in the sample project to help you
 
 - Pass in a business object to prepare the value container used to add and update records using the SDK
 
-```
+```c#
     public FieldAddEditContainer GetAddEditValues(OnspringUser user)
     {
         var values = new FieldAddEditContainer();
@@ -131,12 +131,12 @@ This section describes key aspects of the code in the sample project to help you
 #### GetUserByUsername(string userName)
 
 - Construct a filter used to query the API
-```
+```c#
     var filter = $"{_mapper.UsernameFieldId} eq '{userName}'";
 ```
 
 - Limit the fields in the result to the ones we care about
-```
+```c#
     var fieldIds = new[]
     {
         _mapper.UsernameFieldId,
@@ -147,12 +147,12 @@ This section describes key aspects of the code in the sample project to help you
 ```
 
 - Retrieve the matching record information by calling the API using the SDK
-```
+```c#
     var records = _httpHelper.GetAppRecords(_mapper.UsersAppId, filter, fieldIds: fieldIds);
 ```
 
 - Use the `OnspringMapper` method mentioned earlier to create the strongly-typed business object
-```
+```c#
     return _mapper.LoadUser(records[0]);
 ```
 
@@ -160,7 +160,7 @@ This section describes key aspects of the code in the sample project to help you
 
 - Use a strongly-typed object to create and load a value container, then add the record and return the new record's Id
 
-```
+```c#
     public int? AddNewUser(OnspringUser user)
     {
         var fieldValues = _mapper.GetAddEditValues(user);
@@ -172,18 +172,18 @@ This section describes key aspects of the code in the sample project to help you
 ### Program.cs
 
 - Create an instance of the project-specific `OnspringHelper` used to make calls to the API
-```
+```c#
     var apiBaseUrl = ConfigurationManager.AppSettings["ApiBaseUrl"];
     var apiKey = ConfigurationManager.AppSettings["ApiKey"];
     var onspringApi = new OnspringHelper(apiBaseUrl, apiKey);
 ```
 
 - Call the project-specific helper method to search for a user by username
-```
+```c#
     var onUser = onspringApi.GetUserByUsername(adUser.SamAccountName);
 ```
 
 - Call the project-specific helper method to add a new user
-```
+```c#
     var recordId = onspringApi.AddNewUser(onUser);
 ```
