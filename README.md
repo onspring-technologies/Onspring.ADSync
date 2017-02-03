@@ -4,7 +4,7 @@ Onspring.ADSync is a small sample console application that helps you learn the r
 
 ## Prerequisites
 
-- .NET 4.5 or later
+- .NET 4.6.1 or later
 - Visual Studio 2015 or later (for C# 6)
 
 ## Application Overview
